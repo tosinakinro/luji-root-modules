@@ -1,6 +1,9 @@
 name: infra_provisioning
 
 on:
+  pull_request:
+    branches:
+      - '**'
   push:
     branches:
       - main
