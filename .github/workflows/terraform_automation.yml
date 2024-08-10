@@ -1,0 +1,80 @@
+name: Terraform Automation
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./terraform # Adjust to your Terraform directory
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0 # Adjust the Terraform version as needed
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=plan.tfplan
+
+    - name: Terraform Plan PR Comment
+      if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
+      run: |
+        echo "Terraform plan completed on non-main branch or PR."
+        echo "Add any necessary comments here."
+    
+    - name: Request Manual Approval
+      if: github.ref == 'refs/heads/main'
+      uses: peter-evans/slash-command-dispatch@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        reaction-token: ${{ secrets.GITHUB_TOKEN }}
+        commands: |
+          /approve
+        allow-edits: true
+        permission: write
+        dispatch-type: issue_comment
+
+    - name: Wait for Approval
+      if: github.ref == 'refs/heads/main'
+      id: approval
+      uses: ShahradR/action-wait-for-check@v1.1.0
+      with:
+        check-name: 'Request Manual Approval'
+        timeout-seconds: 3600 # 1 hour timeout
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion == 'success'
+      run: terraform apply "plan.tfplan"
+
+    - name: Approval Denied or Timeout
+      if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion != 'success'
+      run: echo "Approval denied or timed out. Terraform apply was not executed."
