@@ -53,27 +53,7 @@ jobs:
         run: |
           echo "Terraform plan completed on non-main branch or PR."
           echo "Add any necessary comments here."
-    
-      - name: Request Manual Approval
-        if: github.ref == 'refs/heads/main'
-        uses: peter-evans/slash-command-dispatch@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          reaction-token: ${{ secrets.GITHUB_TOKEN }}
-          commands: |
-            /approve
-          allow-edits: true
-          permission: write
-          dispatch-type: issue_comment
-
-      - name: Wait for Approval
-        if: github.ref == 'refs/heads/main'
-        id: approval
-        uses: christoomey/wait-for-check@v0.3
-        with:
-          check-name: 'Request Manual Approval'
-          timeout-seconds: 3600 # 1 hour timeout
-  
+          
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion == 'success'
         run: terraform apply "plan.tfplan"
