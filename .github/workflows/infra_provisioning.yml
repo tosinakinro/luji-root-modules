@@ -65,11 +65,11 @@ jobs:
           allow-edits: true
           permission: write
           dispatch-type: issue_comment
-  
+
       - name: Wait for Approval
         if: github.ref == 'refs/heads/main'
         id: approval
-        uses: ShahradR/action-wait-for-check@v1.1.0
+        uses: christoomey/wait-for-check@v0.3
         with:
           check-name: 'Request Manual Approval'
           timeout-seconds: 3600 # 1 hour timeout
