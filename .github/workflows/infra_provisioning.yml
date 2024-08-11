@@ -1,6 +1,9 @@
 name: infra_provisioning
 
 on:
+  pull_request:
+    branches:
+      - '**'
   push:
     branches:
       - main
@@ -9,6 +12,10 @@ jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: dev/mwaa 
 
     permissions:
       id-token: write
