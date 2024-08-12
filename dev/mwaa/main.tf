@@ -7,7 +7,7 @@ data "aws_ssm_parameter" "aws_account_id" {
 }
 
 module "s3" {
-  source      = "git@github.com:tosinakinro/luji-terraform-modules.git//apache_airflow/s3"
+  source      = "https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/s3"
   environment_names = var.environment_names
   tags = var.tags
   cloudtrial_name = var.cloudtrial_name
@@ -15,7 +15,7 @@ module "s3" {
 }
 
 module "iam" {
-  source            = "git@github.com:tosinakinro/luji-terraform-modules.git//apache_airflow/iam"
+  source            = "https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/iam"
   role_name         = var.iam_role_name
   role_policy_name  = var.role_policy_name
   bucket_arn        = module.s3.bucket_arns
@@ -27,7 +27,7 @@ module "iam" {
 
 
 module "vpc" {
-  source = "git@github.com:tosinakinro/luji-terraform-modules.git//apache_airflow/vpc"
+  source = "https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/vpc"
 
   vpc_cidr             = var.vpc_cidr
   private_subnet_cidrs = var.private_subnet_cidrs
@@ -38,13 +38,13 @@ module "vpc" {
 
 
 module "security_group" {
-  source  = "git@github.com:tosinakinro/luji-terraform-modules.git//apache_airflow/security_group"
+  source  = "https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/security_group"
   vpc_id  = module.vpc.vpc_id
   sg_name = var.security_group_name
 }
 
 module "mwaa" {
-  source                          = "git@github.com:tosinakinro/luji-terraform-modules.git//apache_airflow/mwaa"
+  source                          = "https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/mwaa"
   environment_names               = var.environment_names
   airflow_version                 = var.airflow_version
   dag_s3_path                     = var.dag_s3_path
