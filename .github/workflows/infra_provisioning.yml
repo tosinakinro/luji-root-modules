@@ -51,10 +51,14 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Validate
         id: validate
         run: terraform validate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Plan
         id: plan
