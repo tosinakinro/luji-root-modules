@@ -52,17 +52,19 @@ jobs:
         id: init
         run: terraform init
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Validate
         id: validate
         run: terraform validate
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=plan.tfplan
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Plan PR Comment
         if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
