@@ -26,10 +26,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Configure Git for HTTPS Authentication
+      - name: Setup Git credentials
         run: |
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          git config --global credential.helper store
+          echo "https://${{ secrets.PAT_TOKEN }}:x-oauth-basic@github.com" > ~/.git-credentials
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -51,20 +51,14 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Validate
         id: validate
         run: terraform validate
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=plan.tfplan
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Plan PR Comment
         if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
