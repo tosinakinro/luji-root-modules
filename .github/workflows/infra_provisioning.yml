@@ -69,7 +69,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion == 'success'
         run: terraform apply "plan.tfplan"
-  
-      - name: Approval Denied or Timeout
-        if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion != 'success'
-        run: echo "Approval denied or timed out. Terraform apply was not executed."
+
