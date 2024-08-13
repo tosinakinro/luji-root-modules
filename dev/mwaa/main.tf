@@ -6,6 +6,7 @@ data "aws_ssm_parameter" "aws_account_id" {
   name = "/account/id"
 }
 
+
 module "s3" {
   source      = "git::https://github.com/tosinakinro/luji-terraform-modules.git//apache_airflow/s3"
   environment_names = var.environment_names
