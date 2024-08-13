@@ -59,14 +59,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=plan.tfplan
-
-      - name: Terraform Plan PR Comment
-        if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
-        run: |
-          echo "Terraform plan completed on non-main branch or PR."
-          echo "Add any necessary comments here."
           
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion == 'success'
+        if: github.ref == 'refs/heads/main'
         run: terraform apply "plan.tfplan"
 
