@@ -1,10 +1,10 @@
 region                           = "us-east-1"
 s3_bucket_name                   = "luji-mwaa-bucket"
 iam_role_name                    = "luji-mwaa-execution-role"
-vpc_cidr                         = "10.0.0.0/16"
-private_subnet_cidrs             = ["10.0.3.0/24", "10.0.4.0/24"]
+vpc_cidr                         = "10.13.32.0/21"
+private_subnet_cidrs             = ["10.13.32.0/23", "10.13.32.0/23"]
 azs                              = ["us-east-1a", "us-east-1b"]
-environment_names                = ["luji-dev-mwaa-environment"]
+environment_names                = ["luji-prod-mwaa-environment"]
 airflow_version                  = "2.9.2"
 environment_class                = "mw1.small"
 webserver_access_mode            = "PUBLIC_ONLY"
