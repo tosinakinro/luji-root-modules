@@ -7,6 +7,16 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'AWS region to deploy to'
+        required: true
+        default: 'us-east-1'
+        type: choice
+        options:
+          - us-east-1
+          - eu-west-1
 
 jobs:
   terraform:
@@ -25,6 +35,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup Git credentials
         run: |
@@ -32,9 +44,9 @@ jobs:
           echo "https://${{ secrets.PAT_TOKEN }}:x-oauth-basic@github.com" > ~/.git-credentials
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.0.0
+          terraform_version: 1.8.5
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -42,11 +54,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }} 
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0 # Adjust the Terraform version as needed
 
       - name: Terraform Init
         id: init
@@ -59,17 +66,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=plan.tfplan
-
-      - name: Terraform Plan PR Comment
-        if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
-        run: |
-          echo "Terraform plan completed on non-main branch or PR."
-          echo "Add any necessary comments here."
           
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion == 'success'
+        if: github.ref == 'refs/heads/main'
         run: terraform apply "plan.tfplan"
-  
-      - name: Approval Denied or Timeout
-        if: github.ref == 'refs/heads/main' && steps.approval.outputs.conclusion != 'success'
-        run: echo "Approval denied or timed out. Terraform apply was not executed."
+
