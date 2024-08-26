@@ -1,4 +1,4 @@
-region                           = "us-east-1"
+region                           = "us-west-1"
 s3_bucket_name                   = "luji-mwaa-bucket"
 iam_role_name                    = "luji-mwaa-execution-role"
 vpc_cidr                         = "10.13.32.0/21"
